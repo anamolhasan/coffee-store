@@ -22,7 +22,7 @@ const Signin = () => {
         }
 
         // update last sign in  to the database
-        fetch('http://localhost:3000/users', {
+        fetch('https://coffee-store-server-lac-two-97.vercel.app/users', {
           method:'PATCH',
           headers: {
             'content-type':'application/json'
