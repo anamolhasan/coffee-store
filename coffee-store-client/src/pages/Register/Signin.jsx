@@ -1,8 +1,13 @@
 import React, { use } from "react";
-import { AuthContext } from "../contexts/AuthContext";
+import { AuthContext } from "../../contexts/AuthContext";
+import { useLocation, useNavigate } from "react-router";
+import Swal from "sweetalert2";
+// import { AuthContext } from "../contexts/AuthContext";
 
 const Signin = () => {
   const {signInUser} = use(AuthContext)
+  const location = useLocation()
+  const navigate = useNavigate()
 
   const handleSignIn = (e) => {
     e.preventDefault()
@@ -21,6 +26,15 @@ const Signin = () => {
           lastSignInTime: result.user?.metadata?.lastSignInTime 
         }
 
+        Swal.fire({
+          icon: 'success',
+          title: 'Login Successful!',
+          showConfirmButton: false,
+          timer: 1500,
+        })
+
+        navigate(`${location.state ? location.state : '/'}`)
+
         // update last sign in  to the database
         fetch('https://coffee-store-server-lac-two-97.vercel.app/users', {
           method:'PATCH',
@@ -33,6 +47,7 @@ const Signin = () => {
           .then(data => {
             console.log('after update patch', data)
           })
+          
       })
       .catch(error => {
         console.log(error)

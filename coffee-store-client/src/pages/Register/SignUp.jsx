@@ -1,9 +1,14 @@
 import React, { useContext } from "react";
-import { AuthContext } from "../contexts/AuthContext";
 import Swal from "sweetalert2";
+import { AuthContext } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router";
 
 const SignUp = () => {
-  const { createUser } = useContext(AuthContext);
+
+  const { createUser, setUser, updateUser } = useContext(AuthContext);
+  const navigate = useNavigate()
+
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -11,7 +16,7 @@ const SignUp = () => {
     const formData = new FormData(form);
     // const newUser = Object.fromEntries(formData.entries())
 
-    const { email, password, ...restFormData } = Object.fromEntries(
+    const { email, password, name, photo } = Object.fromEntries(
       formData.entries()
     );
 
@@ -25,10 +30,28 @@ const SignUp = () => {
         const userProfile = {
           email,
           password,
-          ...restFormData,
+          name,
+          photo,
           creationTime: result.user?.metadata?.creationTime,
           lastSignInTime: result.user?.metadata?.lastSignInTime,
         };
+
+        // update user
+        updateUser({displayName: name, photoURL: photo})
+         .then(()=> {
+          setUser({...user, displayName:name, photoURL:photo})
+           Swal.fire({
+            icon: 'success',
+            title: 'Your account is created.',
+            showConfirmButton: false,
+            timer: 1500,
+          })
+          navigate('/')
+         })
+         .catch((error)=>{
+          console.log(error.message)
+          setUser(user)
+         })
 
         // save user info in the database
         fetch("https://coffee-store-server-lac-two-97.vercel.app/users", {
@@ -51,6 +74,8 @@ const SignUp = () => {
               });
             }
           });
+          // -----------------
+
       })
       .catch((error) => {
         console.log(error);
@@ -61,8 +86,10 @@ const SignUp = () => {
       <div className="card-body ">
         <h1 className="text-4xl font-bold">Sign up now!</h1>
         <form onSubmit={handleSubmit} className="fieldset">
+
           <label className="label">Name</label>
           <input type="text" name="name" className="input" placeholder="name" />
+
           <label className="label">address</label>
           <input
             type="text"
@@ -70,6 +97,7 @@ const SignUp = () => {
             className="input"
             placeholder="address"
           />
+
           <label className="label">phone</label>
           <input
             type="text"
@@ -77,6 +105,7 @@ const SignUp = () => {
             className="input"
             placeholder="phone"
           />
+
           <label className="label">photo</label>
           <input
             type="text"
@@ -84,6 +113,7 @@ const SignUp = () => {
             className="input"
             placeholder="photo"
           />
+
           <label className="label">Email</label>
           <input
             type="email"
@@ -91,6 +121,7 @@ const SignUp = () => {
             className="input"
             placeholder="Email"
           />
+
           <label className="label">Password</label>
           <input
             type="password"
@@ -98,6 +129,7 @@ const SignUp = () => {
             className="input"
             placeholder="Password"
           />
+
           <div>
             <a className="link link-hover">Forgot password?</a>
           </div>
