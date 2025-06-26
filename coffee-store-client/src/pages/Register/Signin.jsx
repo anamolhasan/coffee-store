@@ -36,7 +36,7 @@ const Signin = () => {
         navigate(`${location.state ? location.state : '/'}`)
 
         // update last sign in  to the database
-        fetch('https://coffee-store-server-lac-two-97.vercel.app/users', {
+        fetch('/users', {
           method:'PATCH',
           headers: {
             'content-type':'application/json'

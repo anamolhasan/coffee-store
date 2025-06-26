@@ -14,8 +14,8 @@ const Header = () => {
       });    
   }
   return (
-    <div className="container mx-auto navbar  bg-base-100 shadow-sm py-5">
-  <div className="navbar-start">
+    <div className="container mx-auto flex justify-between gap-4  bg-base-100 shadow-sm py-5">
+  <div className="">
 
     {/* for mobaile */}
     <div className="dropdown">
@@ -40,21 +40,21 @@ const Header = () => {
       </ul>
 
     </div>
-    <a className="btn btn-ghost text-xl">daisyUI</a>
+    <a className="btn btn-ghost text-xl">COFFEE STORE</a>
   </div>
 
   {/* for pc */}
-  <div className="navbar-end hidden lg:flex">
+  <div className=" hidden lg:flex">
     <ul className="menu menu-horizontal px-1">
       <li><NavLink to={'/'}>Home</NavLink></li>      
-      <li><NavLink to={'/all-coffees'}>All Coffee's</NavLink></li>
+      {/* <li><NavLink to={'/all-coffees'}>All Coffee's</NavLink></li> */}
       <li><NavLink to={'/users'}>Users</NavLink></li>
       <li><NavLink to={'/users2'}>Users2</NavLink></li>
       {
         user ? (
           <>
             <li><NavLink to={'/addCoffee'}>Add Coffee</NavLink></li>
-            <li><NavLink to={'/my-added-coffees'}>My Added Coffee's</NavLink></li>
+            <li><NavLink to={`/my-added-coffees/${user?.email}`}>My Added Coffee's</NavLink></li>
             <li><NavLink to={'/my-orders'}>My Orders</NavLink></li>
             {user && (
                 <div className='flex justify-around items-center gap-2'>

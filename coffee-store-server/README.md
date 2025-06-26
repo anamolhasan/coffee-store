@@ -1,0 +1,1 @@
+server start  npm run dev

@@ -8,6 +8,10 @@ import Signin from "../pages/Register/Signin";
 import SignUp from "../pages/Register/SignUp";
 import Users from "../pages/AllUser/Users";
 import Users2 from "../pages/AllUser/Users2";
+import Loading from "../components/Loading";
+
+import MyAddedCoffee from "../pages/Coffees/MyAddedCoffee";
+import axios from "axios";
 
 
 const router = createBrowserRouter([
@@ -17,9 +21,8 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        loader: () =>
-          fetch("https://coffee-store-server-lac-two-97.vercel.app/coffees"),
-        hydrateFallbackElement: <p>loading.......</p>,
+       loader: () => axios(`${import.meta.env.VITE_API_URL}/coffees`),
+        hydrateFallbackElement: <Loading />,
         Component: Home,
       },
       {
@@ -28,19 +31,23 @@ const router = createBrowserRouter([
       },
       {
         path: "coffee/:id",
+        loader: ({params}) => axios(`${import.meta.env.VITE_API_URL}/coffee/${params.id}`),
         Component: CoffeeDetails,
       },
       {
         path: "updateCoffee/:id",
-        loader: ({ params }) =>
-          fetch(
-            `https://coffee-store-server-lac-two-97.vercel.app/coffees/${params.id}`
-          ),
+        
         Component: UpdateCoffee,
       },
       {
+        path: "my-added-coffees/:email",
+        loader: ({params}) => axios(`${import.meta.env.VITE_API_URL}/my-coffee/${params.email}`),
+        hydrateFallbackElement: <Loading />,
+         Component: MyAddedCoffee,
+      },
+      {
         path: "signin",
-        Component: Signin,
+             Component: Signin,
       },
       {
         path: "signup",
@@ -48,8 +55,7 @@ const router = createBrowserRouter([
       },
       {
         path: "users",
-        loader: () =>
-          fetch("https://coffee-store-server-lac-two-97.vercel.app/users"),
+       
         Component: Users,
       },
       {

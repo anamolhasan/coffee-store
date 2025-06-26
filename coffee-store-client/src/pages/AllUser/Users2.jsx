@@ -9,29 +9,14 @@ const Users2 = () => {
     const {isPending,isError,error, data: users} = useQuery({
         queryKey: ['users'],
         queryFn: async () => {
-            const res = await fetch('https://coffee-store-server-lac-two-97.vercel.app/users')
+            const res = await fetch('/users')
             return res.json()
         }
     })
 
 
     const handleDelete = (id) => {
-       fetch(`https://coffee-store-server-lac-two-97.vercel.app/users/${id}`, {
-              method: "DELETE",
-            })
-              .then((res) => res.json())
-              .then((data) => {
-                // console.log("after delete", data);
-                if (data.deletedCount>0) {
-    
-                    // const remainingnUsers = users.filter(user => user._id !== id)
-                    // setUsers(remainingnUsers)
-    
-                    // Todo Delete user from firebase
-    
-                 
-                }
-              });
+      
       };
 
       if(isPending){

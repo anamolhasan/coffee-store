@@ -1,13 +1,9 @@
 import React from 'react'
-import { useLoaderData } from 'react-router'
-import Swal from 'sweetalert2'
 
 const UpdateCoffee = () => {
-  // const coffee = useLoaderData()
-  // console.log(coffee)
-  const { _id, photo, quantity, supplier, taste, name, price, details } = useLoaderData()
+  
 
-  console.log(_id, photo, quantity, supplier, taste, name, price, details)
+
   const handleUpdateCoffee = (e) => {
     e.preventDefault()
     const form = e.target
@@ -15,25 +11,7 @@ const UpdateCoffee = () => {
     const updateedCoffee = Object.fromEntries(fromData.entries())
     console.log(updateedCoffee)
 
-    fetch(`https://coffee-store-server-lac-two-97.vercel.app/coffees/${_id}`, {
-      method: 'PUT',
-      headers: {
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify(updateedCoffee)
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.modifiedCount) {
-          Swal.fire({
-            position: "top-end",
-            icon: "success",
-            title: "Your work has been saved",
-            showConfirmButton: false,
-            timer: 1500
-          });
-        }
-      })
+   
 
   }
   return (
@@ -53,28 +31,28 @@ const UpdateCoffee = () => {
             </fieldset>
             <fieldset className="fieldset bg-base-200 border-base-300 rounded-box  border p-4">
               <label className="label">Quantity</label>
-              <input type="text" required name='quantity' defaultValue={quantity} className="input w-full" placeholder="Enter coffee Quantity" />
+              <input type="text" required name='quantity' defaultValue={''} className="input w-full" placeholder="Enter coffee Quantity" />
             </fieldset>
             <fieldset className="fieldset bg-base-200 border-base-300 rounded-box  border p-4">
               <label className="label">Supplier</label>
-              <input type="text" required name='supplier' defaultValue={supplier} className="input w-full" placeholder="Enter coffee supplier" />
+              <input type="text" required name='supplier' defaultValue={''} className="input w-full" placeholder="Enter coffee supplier" />
             </fieldset>
             <fieldset className="fieldset bg-base-200 border-base-300 rounded-box  border p-4">
               <label className="label">Taste</label>
-              <input type="text" required name='taste' defaultValue={taste} className="input w-full" placeholder="Enter coffee taste" />
+              <input type="text" required name='taste' defaultValue={''} className="input w-full" placeholder="Enter coffee taste" />
             </fieldset>
             <fieldset className="fieldset bg-base-200 border-base-300 rounded-box  border p-4">
               <label className="label">price</label>
-              <input type="text" required name='price' defaultValue={price} className="input w-full" placeholder="Enter coffee price" />
+              <input type="text" required name='price' defaultValue={''} className="input w-full" placeholder="Enter coffee price" />
             </fieldset>
             <fieldset className="fieldset bg-base-200 border-base-300 rounded-box  border p-4">
               <label className="label">Details</label>
-              <input type="text" required name='details' defaultValue={details} className="input w-full" placeholder="Enter coffee details" />
+              <input type="text" required name='details' defaultValue={''} className="input w-full" placeholder="Enter coffee details" />
             </fieldset>
           </div>
           <fieldset className="fieldset bg-base-200 border-base-300 rounded-box my-6  border p-4">
             <label className="label">Photo url</label>
-            <input type="text" required name='photo' defaultValue={photo} className="input w-full" placeholder="Enter photo url" />
+            <input type="text" required name='photo' defaultValue={''} className="input w-full" placeholder="Enter photo url" />
           </fieldset>
 
           <input type="submit" value="update Coffee" className='btn w-full' />

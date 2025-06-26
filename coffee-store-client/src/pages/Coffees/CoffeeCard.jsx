@@ -4,43 +4,11 @@ import Swal from 'sweetalert2';
 
 const CoffeeCard = ({ coffee, coffees, setCoffees }) => {
     const { _id, photo, quantity, supplier, taste, name, price } = coffee
-    // console.log(name,photo, quantity, supplier, taste )
+
 
     const handleDelete = (_id) => {
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-
-                // start delete the coffee
-
-                fetch(`https://coffee-store-server-lac-two-97.vercel.app/coffees/${_id}`, {
-                    method: 'DELETE',
-                })
-                    .then(res => res.json())
-                    .then(data => {
-                        if(data.deletedCount){
-                             Swal.fire({
-                            title: "Deleted!",
-                            text: "Your file has been deleted.",
-                            icon: "success"
-                        });
-                            const remainingCoffee = coffees.filter(coff => coff._id !== _id)
-                            setCoffees(remainingCoffee)
-                        }
-                        // console.log('after delete', data)
-                       
-                    })
-
-
-            }
-        });
+      
+        
     }
 
     return (
