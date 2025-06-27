@@ -1,15 +1,14 @@
-import React, { use } from "react";
+import React, { use, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useLoaderData } from "react-router";
-
-
+import axios from "axios";
 
 const CoffeeDetails = () => {
   const { user } = use(AuthContext);
 
- const {data : coffee} = useLoaderData()
-  
-  console.log(coffee)
+  const { data: coffee } = useLoaderData();
+
+  console.log(coffee);
   const {
     _id,
     photo,
@@ -22,16 +21,34 @@ const CoffeeDetails = () => {
     email,
     likeBy,
   } = coffee || {};
-  console.log(likeBy)
-  
+  console.log(details);
 
-  const [liked, setLiked] = useState(likedBy.includes(user?.email));
-  const [likeCount, setLikeCount] = useState(likedBy?.length);
+  const [liked, setLiked] = useState(likeBy.includes(false));
+  const [likeCount, setLikeCount] = useState(likeBy?.length);
+
+  useEffect(()=>{
+    setLiked(likeBy.includes(user?.email))
+  },[likeBy, user])
 
   // handle like/dislike
   const handleLike = () => {
-    if (user?.email === email.email) return alert("Lojja korena?");
-  
+    if (user?.email === email) return alert("Lojja korena?");
+
+    // handle like toggle api fetch call
+    axios.patch(`${import.meta.env.VITE_API_URL}/like/${_id}`, {
+      email: user?.email,
+    }).then(data => {
+      console.log(data?.data)
+      const isLiked = data?.data?.liked 
+      // update liked state
+      setLiked(isLiked)
+
+      // update liked count state
+      setLikeCount(prev => (isLiked ? prev + 1 : prev - 1))
+    })
+    .catch(err => {
+      console.log(err)
+    })
   };
 
   return (
@@ -44,10 +61,12 @@ const CoffeeDetails = () => {
           <p>Name : {name}</p>
           <p>Details : {details}</p>
           <p>Quantity: {quantity}</p>
-          <p>Likes: {likeBy?.length}</p>
+          <p>Likes: {likeCount}</p>
           <div className="flex gap-5">
             <button className="btn btn-primary">order</button>
-            <button onClick={handleLike} className="btn btn-secondary">Like</button>
+            <button onClick={handleLike} className="btn btn-secondary">
+           👍  {liked ? 'Liked' : ' Like '}
+            </button>
           </div>
         </div>
       </div>

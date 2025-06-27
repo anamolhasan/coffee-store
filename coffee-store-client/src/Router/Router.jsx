@@ -12,7 +12,7 @@ import Loading from "../components/Loading";
 
 import MyAddedCoffee from "../pages/Coffees/MyAddedCoffee";
 import axios from "axios";
-
+import PrivateRouter from "../contexts/PrivateRouter";
 
 const router = createBrowserRouter([
   {
@@ -21,33 +21,51 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-       loader: () => axios(`${import.meta.env.VITE_API_URL}/coffees`),
+        loader: () => axios(`${import.meta.env.VITE_API_URL}/coffees`),
         hydrateFallbackElement: <Loading />,
         Component: Home,
       },
       {
         path: "addCoffee",
-        Component: AddCoffee,
+        element: (
+          <PrivateRouter>
+            <AddCoffee />
+          </PrivateRouter>
+        ),
       },
       {
         path: "coffee/:id",
-        loader: ({params}) => axios(`${import.meta.env.VITE_API_URL}/coffee/${params.id}`),
-        Component: CoffeeDetails,
+        loader: ({ params }) =>
+          axios(`${import.meta.env.VITE_API_URL}/coffee/${params.id}`),
+        element: (
+          <PrivateRouter>
+            <CoffeeDetails />
+          </PrivateRouter>
+        ),
       },
       {
         path: "updateCoffee/:id",
-        
-        Component: UpdateCoffee,
+
+        element: (
+          <PrivateRouter>
+            <UpdateCoffee />
+          </PrivateRouter>
+        ),
       },
       {
         path: "my-added-coffees/:email",
-        loader: ({params}) => axios(`${import.meta.env.VITE_API_URL}/my-coffee/${params.email}`),
+        loader: ({ params }) =>
+          axios(`${import.meta.env.VITE_API_URL}/my-coffee/${params.email}`),
         hydrateFallbackElement: <Loading />,
-         Component: MyAddedCoffee,
+        element: (
+          <PrivateRouter>
+            <MyAddedCoffee />
+          </PrivateRouter>
+        ),
       },
       {
         path: "signin",
-             Component: Signin,
+        Component: Signin,
       },
       {
         path: "signup",
@@ -55,7 +73,7 @@ const router = createBrowserRouter([
       },
       {
         path: "users",
-       
+
         Component: Users,
       },
       {
@@ -66,4 +84,4 @@ const router = createBrowserRouter([
   },
 ]);
 
-export default router
+export default router;

@@ -1,21 +1,16 @@
-require('dotenv').config()
-const express = require('express');
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const cors = require('cors');
+require("dotenv").config();
+const express = require("express");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const cors = require("cors");
 // const { CURSOR_FLAGS } = require('mongodb');
 const app = express();
-const port = process.env.PORT ||3000
+const port = process.env.PORT || 3000;
 
-
-app.use(cors())
-app.use(express.json())
-
+app.use(cors());
+app.use(express.json());
 
 // coffee_monster
 // HfpUXeKjgLoXF30y
-
-
-
 
 // const uri = `mongodb+srv://${process.env.BD_USER}:${process.env.BD_PASS}@cluster0.0ksef.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
@@ -27,7 +22,7 @@ const client = new MongoClient(process.env.MONGODB_URL, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  },
 });
 
 async function run() {
@@ -35,40 +30,68 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
 
-    const coffeeCollection = client.db('coffeeDB').collection('coffees')
-    const usersCollection = client.db('coffeeDB').collection('users')
+    const coffeeCollection = client.db("coffeeDB").collection("coffees");
+    const usersCollection = client.db("coffeeDB").collection("users");
 
+    app.get("/coffees", async (req, res) => {
+      const allCoffees = await coffeeCollection.find().toArray();
+      res.send(allCoffees);
+    });
 
-    app.get('/coffees', async(req, res) => {
-      const allCoffees = await coffeeCollection.find().toArray()
-      res.send(allCoffees)
-    })
+    app.get("/coffee/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const result = await coffeeCollection.findOne(filter);
+      res.send(result);
+    });
 
-    app.get('/coffee/:id', async(req, res) => {
-      const id = req.params.id
-      const filter = {_id: new ObjectId(id)}
-      const result = await coffeeCollection.findOne(filter)
-      res.send(result)
-    })
+    app.get("/my-coffee/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const result = await coffeeCollection.find(filter).toArray();
+      res.send(result);
+    });
 
-    app.get('/my-coffee/:email', async(req, res) => {
-      const email = req.params.email
-      const filter = {email: email }
-      const result = await coffeeCollection.find(filter).toArray()
-      res.send(result)
-    })
+    app.post("/add-coffee", async (req, res) => {
+      const coffeeData = req.body;
+      const result = await coffeeCollection.insertOne(coffeeData);
+      res.status(201).send({ ...result, message: "Data paisi vai, thank" });
+    });
 
-     app.post('/add-coffee', async(req, res) => {
-      const coffeeData = req.body
-      const result = await coffeeCollection.insertOne(coffeeData)
-      res.status(201).send({...result, message: 'Data paisi vai, thank'})
-     })
+    app.patch("/like/:coffeeId", async (req, res) => {
+      const id = req.params.coffeeId;
+      const email = req.body.email;
+      const filter = { _id: new ObjectId(id) };
+      const coffee = await coffeeCollection.findOne(filter);
+      // check if the user has already liked the coffee or not
+      const alreadyLiked = coffee?.likeBy.includes(email); //false
+      const updateDoc = alreadyLiked
+        ? {
+            $pull: {
+              // dislike coffee (pop email from likeBy array)
+              likeBy: email,
+            },
+          }
+        : {
+            $addToSet: {
+              //like coffee (push email in likeBy array )
+              likeBy: email,
+            },
+          };
 
-    
+      await coffeeCollection.updateOne(filter, updateDoc);
+      // true
+      res.send({
+        message: alreadyLiked ? "Dislike Successful" : "Like Successful",
+        liked: !alreadyLiked,
+      });
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    console.log(
+      "Pinged your deployment. You successfully connected to MongoDB!"
+    );
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
@@ -76,12 +99,10 @@ async function run() {
 }
 run().catch(console.dir);
 
+app.get("/", (req, res) => {
+  res.send("Coffee server is getting hotter!");
+});
 
-app.get('/', (req, res) => {
-    res.send('Coffee server is getting hotter!') 
-})
-
-
-app.listen(port, ()=>{
-    console.log(`Coffee server is running on port http://localhost:${port}`)
-})
+app.listen(port, () => {
+  console.log(`Coffee server is running on port http://localhost:${port}`);
+});
