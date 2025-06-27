@@ -32,6 +32,7 @@ async function run() {
 
     const coffeeCollection = client.db("coffeeDB").collection("coffees");
     const usersCollection = client.db("coffeeDB").collection("users");
+    const orderCollection = client.db("coffeeDB").collection('orders')
 
     app.get("/coffees", async (req, res) => {
       const allCoffees = await coffeeCollection.find().toArray();
@@ -54,6 +55,8 @@ async function run() {
 
     app.post("/add-coffee", async (req, res) => {
       const coffeeData = req.body;
+      const quantity = req.body.quantity
+      coffeeData.quantity = parseInt(quantity)
       const result = await coffeeCollection.insertOne(coffeeData);
       res.status(201).send({ ...result, message: "Data paisi vai, thank" });
     });
@@ -86,6 +89,51 @@ async function run() {
         liked: !alreadyLiked,
       });
     });
+
+
+     app.post("/place-order/:coffeeId", async (req, res) => {
+       const id = req.params.coffeeId;
+      const orderData = req.body
+
+      const result = await orderCollection.insertOne(orderData)
+      if( result.acknowledged){
+        // update quantity frm coffee collection
+        await coffeeCollection.updateOne(
+          {_id: new ObjectId(id)},
+          {
+            $inc: {
+              quantity: -1
+            }
+          }
+        )
+      }
+      res.status(201).send(result);
+    });
+
+
+    // get all orders by customer email 
+    app.get('/my-orders/:email', async(req, res) => {
+      const email = req.params.email
+      // console.log(email)
+      const filter = { customerEmail : email}
+      const allOrders = await orderCollection.find(filter).toArray()
+      // console.log(allOrders)
+
+      for(const order of allOrders){
+          const orderId = order.coffeeId
+          const fullCoffeeData = await coffeeCollection.findOne({
+               _id: new ObjectId(orderId)
+             })
+              order.name = fullCoffeeData.name
+              order.photo = fullCoffeeData.photo
+              order.price = fullCoffeeData.price
+              order.quantity = fullCoffeeData.quantity
+       }
+      res.send(allOrders)
+    })
+
+
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });

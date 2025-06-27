@@ -6,9 +6,10 @@ import axios from "axios";
 const CoffeeDetails = () => {
   const { user } = use(AuthContext);
 
-  const { data: coffee } = useLoaderData();
+  const { data} = useLoaderData();
+  const [coffee, setCoffee] = useState(data)
 
-  console.log(coffee);
+  // console.log(coffee);
   const {
     _id,
     photo,
@@ -21,34 +22,57 @@ const CoffeeDetails = () => {
     email,
     likeBy,
   } = coffee || {};
-  console.log(details);
+  // console.log(details);
 
   const [liked, setLiked] = useState(likeBy.includes(false));
   const [likeCount, setLikeCount] = useState(likeBy?.length);
 
-  useEffect(()=>{
-    setLiked(likeBy.includes(user?.email))
-  },[likeBy, user])
+  useEffect(() => {
+    setLiked(likeBy.includes(user?.email));
+  }, [likeBy, user]);
 
   // handle like/dislike
   const handleLike = () => {
-    if (user?.email === email) return alert("Lojja korena?");
+    if (user?.email === email) return alert("lojja kore na ?");
 
     // handle like toggle api fetch call
-    axios.patch(`${import.meta.env.VITE_API_URL}/like/${_id}`, {
-      email: user?.email,
-    }).then(data => {
-      console.log(data?.data)
-      const isLiked = data?.data?.liked 
-      // update liked state
-      setLiked(isLiked)
+    axios
+      .patch(`${import.meta.env.VITE_API_URL}/like/${_id}`, {
+        email: user?.email,
+      })
+      .then((data) => {
+        console.log(data?.data);
+        const isLiked = data?.data?.liked;
+        // update liked state
+        setLiked(isLiked);
 
-      // update liked count state
-      setLikeCount(prev => (isLiked ? prev + 1 : prev - 1))
-    })
-    .catch(err => {
-      console.log(err)
-    })
+        // update liked count state
+        setLikeCount((prev) => (isLiked ? prev + 1 : prev - 1));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  // handle order
+  const handleOrder = () => {
+    if (user?.email === email) return alert("thomar nijer coffee");
+    const orderInfo = {
+      coffeeId: _id,
+      customerEmail: user?.email,
+    };
+
+    //  save order info
+    axios.post(`${import.meta.env.VITE_API_URL}/place-order/${_id}`, orderInfo)
+        .then(data => {
+           console.log(data.data)
+           setCoffee(prev => {
+            return {...prev, quantity : prev.quantity -1}
+           })
+        })
+        .catch(error => {
+          console.log(error)
+        })
   };
 
   return (
@@ -63,9 +87,9 @@ const CoffeeDetails = () => {
           <p>Quantity: {quantity}</p>
           <p>Likes: {likeCount}</p>
           <div className="flex gap-5">
-            <button className="btn btn-primary">order</button>
+            <button onClick={handleOrder} className="btn btn-primary">order</button>
             <button onClick={handleLike} className="btn btn-secondary">
-           👍  {liked ? 'Liked' : ' Like '}
+              👍 {liked ? "Liked" : " Like "}
             </button>
           </div>
         </div>

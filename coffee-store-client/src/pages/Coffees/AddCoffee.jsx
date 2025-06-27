@@ -14,9 +14,14 @@ const AddCoffee = () => {
     const form = e.target;
     const formData = new FormData(form);
     const newCoffee = Object.fromEntries(formData.entries());
+
+    // convert quantity and price to number
+    // newCoffee.quantity = Number(newCoffee.quantity)
+    // newCoffee.price = Number(newCoffee.price)
+
     newCoffee.email = user?.email;
     newCoffee.likeBy = [];
-    console.log(newCoffee);
+    // console.log(newCoffee);
 
     axios
       .post(`${import.meta.env.VITE_API_URL}/add-coffee`, newCoffee)
@@ -72,7 +77,7 @@ const AddCoffee = () => {
           <fieldset className="fieldset bg-base-200 border-base-300 rounded-box  border p-4">
             <label className="label">Quantity</label>
             <input
-              type="text"
+              type="number"
               required
               name="quantity"
               className="input w-full"
@@ -101,7 +106,7 @@ const AddCoffee = () => {
           <fieldset className="fieldset bg-base-200 border-base-300 rounded-box  border p-4">
             <label className="label">price</label>
             <input
-              type="text"
+              type="number"
               required
               name="price"
               className="input w-full"

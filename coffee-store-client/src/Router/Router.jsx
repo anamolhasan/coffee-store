@@ -13,6 +13,7 @@ import Loading from "../components/Loading";
 import MyAddedCoffee from "../pages/Coffees/MyAddedCoffee";
 import axios from "axios";
 import PrivateRouter from "../contexts/PrivateRouter";
+import MyOrders from "../pages/myOrders/MyOrders";
 
 const router = createBrowserRouter([
   {
@@ -62,6 +63,10 @@ const router = createBrowserRouter([
             <MyAddedCoffee />
           </PrivateRouter>
         ),
+      },
+      {
+        path: "my-orders",
+        Component: MyOrders
       },
       {
         path: "signin",
